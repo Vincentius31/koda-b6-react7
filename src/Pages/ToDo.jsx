@@ -2,6 +2,55 @@ import { Calendar, Check, Menu, Plus } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
 
 export default function ToDo() {
+    const inputRef = useRef(null)
+
+
+    const [todos, setTodos] = useState(() => {
+        const saved = localStorage.getItem("todos")
+        return saved ? JSON.parse(saved) : []
+    })
+
+
+    useEffect(() => {
+        localStorage.setItem("todos", JSON.stringify(todos))
+        }, [todos]
+    )
+
+
+    const addTodo = () => {
+        const value = inputRef.current.value.trim()
+        if (!value) {
+            return ""
+        }
+
+
+        setTodos([
+            ...todos,
+            {
+                id: Date.now(),
+                text: value,
+                completed: false
+            },
+        ])
+
+
+        inputRef.current.value = ""
+        inputRef.current.focus()
+    }
+
+
+    const toggleTodo = (id) => {
+        setTodos(
+            todos.map((todo) =>
+                todo.id === id? { ...todo, completed: !todo.completed }: todo
+            )
+        )
+    }
+
+
+    const todoList = todos.filter((todo) => !todo.completed)
+    const completedList = todos.filter((todo => todo.completed))
+
     return (
         <div className='min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 to-blue-900'>
             <div className='w-90 rounded-3xl bg-slate-800/90 shadow-xl p-6 text-white'>
